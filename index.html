@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Api</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div>
+        <div id="search">
+            <input type="search">
+            <ion-icon name="search-outline"></ion-icon>
+        </div>
+        <button>Change</button>
+        <img src="#" alt="">
+    </div>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script>
+        const img = document.querySelector('img');
+        const btn = document.querySelector('button');
+        const searchBtn = document.querySelector('#search ion-icon')
+        const searchBox = document.querySelector('#search input')
+        // fetch('https://api.giphy.com/v1/gifs/translate?api_key=AnI2H1VE0ChRmeW137SPLZ32TVrhNtrq&s=cats', {mode: 'cors'})
+        //     .then(function(response) {
+        //         return response.json()
+        //     })
+        //     .then(function(response) {
+        //         img.src = response.data.images.original.url;
+        //     });
+        btn.addEventListener('click', () => {
+            fetch('https://api.giphy.com/v1/gifs/random?api_key=AnI2H1VE0ChRmeW137SPLZ32TVrhNtrq', {mode: 'cors'})
+                .then(function(response) {
+                    return response.json()
+                })
+                .then(function(response) {
+                    img.src = response.data.images.original.url
+                })
+        })
+        const search = () => {
+            const tag = searchBox.value 
+            let url = `https://api.giphy.com/v1/gifs/random?api_key=AnI2H1VE0ChRmeW137SPLZ32TVrhNtrq&tag=${tag}`
+            fetch(url, {mode: 'cors'})
+                .then(function(response) {
+                    if(response.ok) {
+                        return response.json()
+                    }
+                    else {
+                        return Promise.reject(new Error(`${response.status}`))
+                    }
+                })
+                .then(function(response) {
+                    if(Array.isArray(response.data) && response.data.length==0) {
+                        return Promise.reject(new Error('Unable to find gif with searched keyword'))
+                    } else {
+                        img.src = response.data.images.original.url
+                    }
+                })
+                .catch(function(e) {
+                    const output = document.createElement('div')
+                    output.textContent = `${e}`
+                    document.querySelector('div').appendChild(output)
+                })
+        }
+        searchBtn.addEventListener('click', search)
+        searchBox.addEventListener('keyup', (e) => {
+            if(e.key === 'Enter') {
+                search()
+            }
+        })
+    </script>
+</body>
+</html>
